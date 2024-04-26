@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog
-from tkinter import messagebox
 import re
 import math
 
@@ -39,7 +38,7 @@ def choose_file(dimension):
 def set_coordinates(content, dimension):
     try:
         # Use regex to extract coordinates
-        coordinates = re.findall(r"[-+]?\d*\.\d+|\d+", content)
+        coordinates = re.findall(r"[-+]?\d*\.\d+|[-+]?\d+", content)
         if dimension == 2:
             if len(coordinates) >= 8:
                 global points_2d
@@ -106,7 +105,7 @@ def check_results_2d():
         can_be_rectangle = 'A'
     elif scalar_product_of_vectors(vectors_2d['BA'], vectors_2d['BC']) == 0:
         can_be_rectangle = 'B'
-    elif scalar_product_of_vectors(vectors_2d['CB'], vectors_2d['CB']) == 0:
+    elif scalar_product_of_vectors(vectors_2d['CA'], vectors_2d['CB']) == 0:
         can_be_rectangle = 'C'
 
     # Here we check if points satisfy the first condition
@@ -126,6 +125,8 @@ def check_results_2d():
         message4 = "The resulting shape of three points is " + shape
         label_result_4.config(text=message4)
         print(message4)
+
+        point_x_in_rectangle(can_be_rectangle, 2)
 
     else:
         message = "Points A, B, and C cannot be vertices of a rectangle."
@@ -236,8 +237,79 @@ def check_result_3d():
         show_message(message, 3)
 
 
-def point_x_in_rectangle():
-    pass
+def point_x_in_rectangle(start_point, dimension):
+    # First, we need to perform a translation
+    # of the coordinate system to the origin point.
+    start_point_data = points_2d[start_point]
+
+    x_translation = start_point_data[0]
+    y_translation = start_point_data[1]
+
+    translated_points = {}
+
+    for point, coordinates in points_2d.items():
+        x = coordinates[0] - x_translation
+        y = coordinates[1] - y_translation
+        translated_points[point] = (x, y)
+
+    # Now we need to rotate the coordinate system so
+    # that its axes are parallel to the edges of the shape.
+
+    rotated_points = dict()
+    rotated_points[start_point] = (0, 0)
+
+    another_points = [(point, coordinates) for point, coordinates in translated_points.items() if
+                      point != start_point and point != "X"]
+
+    print(start_point)
+    # We are assigning new coordinates to an arbitrary point so that it lies on the X-axis.
+
+    # So that its other coordinates are 0, and the x-coordinate equals the magnitude of
+    # the vector between the initial and arbitrarily chosen points.
+    rotated_x = vector_magnitude(vectors_2d[start_point + another_points[0][0]])
+    rotated_points[another_points[0][0]] = (rotated_x, 0)
+
+    print(f'rotated_x={rotated_x}')
+
+    # Here we do the same for another point lying on the y-axis.
+    rotated_y = vector_magnitude(vectors_2d[start_point + another_points[1][0]])
+    rotated_points[another_points[1][0]] = (0, rotated_y)
+
+    print(f'rotated_y={rotated_y}')
+
+    # Now we calculate the coordinates of point X in the new coordinate system
+    # First, we create a new vector from the initial point to point X
+    vectors_2d[start_point + 'X'] = (
+        points_2d['X'][0] - points_2d[start_point][0], points_2d['X'][1] - points_2d[start_point][1])
+
+    print(points_2d[start_point])
+    print(f'newVector: {vectors_2d[start_point + "X"]}')
+
+    # Now we find the cosine of the angle between the vector from the initial point to X,
+    # as well as the vector from the initial point to the point lying on the x-axis.
+    cos_value_1 = angle_between_vectors(vectors_2d[start_point + 'X'], vectors_2d[start_point + another_points[0][0]])
+    print(f'cos_1: {cos_value_1}')
+
+    new_x = cos_value_1 * vector_magnitude(vectors_2d[start_point + 'X'])
+
+    cos_value_2 = angle_between_vectors(vectors_2d[start_point + 'X'], vectors_2d[start_point + another_points[1][0]])
+    print(f'cos_1: {cos_value_2}')
+    new_y = cos_value_2 * vector_magnitude(vectors_2d[start_point + 'X'])
+
+    rotated_points['X'] = (new_x, new_y)
+    print(rotated_points)
+    # print(start_point)
+
+
+def angle_between_vectors(a, b):
+    numerator = scalar_product_of_vectors(a, b)
+    denominator = vector_magnitude(a) * vector_magnitude(b)
+
+    # print(f'numerator: {numerator}')
+    # print(f'denominator: {denominator}')
+
+    cos_value = numerator / denominator
+    return cos_value
 
 
 def calculate_diagonal(start_point, dimension):
@@ -338,7 +410,7 @@ def cleaning_data(dimension):
         global points_2d
         global vectors_2d
 
-        points_2d
+        points_2d = {}
         vectors_2d = {}
 
     elif dimension == 3:
