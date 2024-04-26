@@ -105,7 +105,7 @@ def check_results_2d():
         can_be_rectangle = 'A'
     elif scalar_product_of_vectors(vectors_2d['BA'], vectors_2d['BC']) == 0:
         can_be_rectangle = 'B'
-    elif scalar_product_of_vectors(vectors_2d['CB'], vectors_2d['CB']) == 0:
+    elif scalar_product_of_vectors(vectors_2d['CA'], vectors_2d['CB']) == 0:
         can_be_rectangle = 'C'
 
     # Here we check if points satisfy the first condition
@@ -261,6 +261,7 @@ def point_x_in_rectangle(start_point, dimension):
     another_points = [(point, coordinates) for point, coordinates in translated_points.items() if
                       point != start_point and point != "X"]
 
+    print(start_point)
     # We are assigning new coordinates to an arbitrary point so that it lies on the X-axis.
 
     # So that its other coordinates are 0, and the x-coordinate equals the magnitude of
@@ -281,6 +282,7 @@ def point_x_in_rectangle(start_point, dimension):
     vectors_2d[start_point + 'X'] = (
         points_2d['X'][0] - points_2d[start_point][0], points_2d['X'][1] - points_2d[start_point][1])
 
+    print(points_2d[start_point])
     print(f'newVector: {vectors_2d[start_point + "X"]}')
 
     # Now we find the cosine of the angle between the vector from the initial point to X,
@@ -305,9 +307,6 @@ def angle_between_vectors(a, b):
 
     # print(f'numerator: {numerator}')
     # print(f'denominator: {denominator}')
-
-    print(f'a: {a}')
-    print(f'b: {b}')
 
     cos_value = numerator / denominator
     return cos_value
