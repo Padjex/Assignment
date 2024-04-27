@@ -39,15 +39,16 @@ def set_coordinates(content, dimension):
     try:
         # Use regex to extract coordinates
         coordinates = re.findall(r"[-+]?\d*\.\d+|[-+]?\d+", content)
+        cleaning_data(dimension)
         if dimension == 2:
             if len(coordinates) >= 8:
                 global points_2d
 
                 points_2d = {
-                    'A': (float(coordinates[0]), float(coordinates[1])),
-                    'B': (float(coordinates[2]), float(coordinates[3])),
-                    'C': (float(coordinates[4]), float(coordinates[5])),
-                    'X': (float(coordinates[6]), float(coordinates[7]))
+                    'A': (float(coordinates[0]), float(coordinates[1]), 0.0),
+                    'B': (float(coordinates[2]), float(coordinates[3]), 0.0),
+                    'C': (float(coordinates[4]), float(coordinates[5]), 0.0),
+                    'X': (float(coordinates[6]), float(coordinates[7]), 0.0)
                 }
 
                 label_A_value.config(text=f"({points_2d['A'][0]}, {points_2d['A'][1]})")
@@ -86,16 +87,16 @@ def set_coordinates(content, dimension):
 
 def check_results_2d():
     # Creating vectors from point A
-    vectors_2d['AB'] = (points_2d['B'][0] - points_2d['A'][0], points_2d['B'][1] - points_2d['A'][1])
-    vectors_2d['AC'] = (points_2d['C'][0] - points_2d['A'][0], points_2d['C'][1] - points_2d['A'][1])
+    vectors_2d['AB'] = (points_2d['B'][0] - points_2d['A'][0], points_2d['B'][1] - points_2d['A'][1], 0.0)
+    vectors_2d['AC'] = (points_2d['C'][0] - points_2d['A'][0], points_2d['C'][1] - points_2d['A'][1], 0.0)
 
     # Creating vectors from point B
-    vectors_2d['BA'] = (points_2d['A'][0] - points_2d['B'][0], points_2d['A'][1] - points_2d['B'][1])
-    vectors_2d['BC'] = (points_2d['C'][0] - points_2d['B'][0], points_2d['C'][1] - points_2d['B'][1])
+    vectors_2d['BA'] = (points_2d['A'][0] - points_2d['B'][0], points_2d['A'][1] - points_2d['B'][1], 0.0)
+    vectors_2d['BC'] = (points_2d['C'][0] - points_2d['B'][0], points_2d['C'][1] - points_2d['B'][1], 0.0)
 
     # Creating vectors from point C
-    vectors_2d['CA'] = (points_2d['A'][0] - points_2d['C'][0], points_2d['A'][1] - points_2d['C'][1])
-    vectors_2d['CB'] = (points_2d['B'][0] - points_2d['C'][0], points_2d['B'][1] - points_2d['C'][1])
+    vectors_2d['CA'] = (points_2d['A'][0] - points_2d['C'][0], points_2d['A'][1] - points_2d['C'][1], 0.0)
+    vectors_2d['CB'] = (points_2d['B'][0] - points_2d['C'][0], points_2d['B'][1] - points_2d['C'][1], 0.0)
 
     can_be_rectangle = False
 
@@ -114,6 +115,11 @@ def check_results_2d():
         label_result_1.config(text=message1)
         print(message1)
 
+        # Here we call the function to check if point X is inside the shape.
+        message2 = point_x_in_rectangle(can_be_rectangle, 2)
+        label_result_2.config(text=message2)
+        print(message2)
+
         # Here we call the function to calculate the length of the diagonal
         diagonal_length = calculate_diagonal(can_be_rectangle, 2)
         message3 = f"The diagonal of the obtained shape is: {diagonal_length}"
@@ -125,8 +131,6 @@ def check_results_2d():
         message4 = "The resulting shape of three points is " + shape
         label_result_4.config(text=message4)
         print(message4)
-
-        point_x_in_rectangle(can_be_rectangle, 2)
 
     else:
         message = "Points A, B, and C cannot be vertices of a rectangle."
@@ -182,24 +186,24 @@ def check_result_3d():
     can_be_rectangular_prism = False
 
     # Calculating the scalar product of all vectors from point A
-    product_vector_ab_ac = scalar_product_of_vectors(vectors_3d['AB'], vectors_3d['AC'])
-    product_vector_ab_ad = scalar_product_of_vectors(vectors_3d['AB'], vectors_3d['AD'])
-    product_vector_ac_ad = scalar_product_of_vectors(vectors_3d['AC'], vectors_3d['AD'])
+    product_vector_ab_ac = round(scalar_product_of_vectors(vectors_3d['AB'], vectors_3d['AC']), 1)
+    product_vector_ab_ad = round(scalar_product_of_vectors(vectors_3d['AB'], vectors_3d['AD']), 1)
+    product_vector_ac_ad = round(scalar_product_of_vectors(vectors_3d['AC'], vectors_3d['AD']), 1)
 
     # Calculating the scalar product of all vectors from point B
-    product_vector_ba_bc = scalar_product_of_vectors(vectors_3d['BA'], vectors_3d['BC'])
-    product_vector_ba_bd = scalar_product_of_vectors(vectors_3d['BA'], vectors_3d['BD'])
-    product_vector_bc_bd = scalar_product_of_vectors(vectors_3d['BC'], vectors_3d['BD'])
+    product_vector_ba_bc = round(scalar_product_of_vectors(vectors_3d['BA'], vectors_3d['BC']), 1)
+    product_vector_ba_bd = round(scalar_product_of_vectors(vectors_3d['BA'], vectors_3d['BD']), 1)
+    product_vector_bc_bd = round(scalar_product_of_vectors(vectors_3d['BC'], vectors_3d['BD']), 1)
 
     # Calculating the scalar product of all vectors from point C
-    product_vector_ca_cb = scalar_product_of_vectors(vectors_3d['CA'], vectors_3d['CB'])
-    product_vector_ca_cd = scalar_product_of_vectors(vectors_3d['CA'], vectors_3d['CD'])
-    product_vector_cb_cd = scalar_product_of_vectors(vectors_3d['CB'], vectors_3d['CD'])
+    product_vector_ca_cb = round(scalar_product_of_vectors(vectors_3d['CA'], vectors_3d['CB']), 1)
+    product_vector_ca_cd = round(scalar_product_of_vectors(vectors_3d['CA'], vectors_3d['CD']), 1)
+    product_vector_cb_cd = round(scalar_product_of_vectors(vectors_3d['CB'], vectors_3d['CD']), 1)
 
     # Calculating the scalar product of all vectors from point D
-    product_vector_da_db = scalar_product_of_vectors(vectors_3d['DA'], vectors_3d['DB'])
-    product_vector_da_dc = scalar_product_of_vectors(vectors_3d['DA'], vectors_3d['DC'])
-    product_vector_db_dc = scalar_product_of_vectors(vectors_3d['DB'], vectors_3d['DC'])
+    product_vector_da_db = round(scalar_product_of_vectors(vectors_3d['DA'], vectors_3d['DB']), 1)
+    product_vector_da_dc = round(scalar_product_of_vectors(vectors_3d['DA'], vectors_3d['DC']), 1)
+    product_vector_db_dc = round(scalar_product_of_vectors(vectors_3d['DB'], vectors_3d['DC']), 1)
 
     # Checking the conditions here, and if any of them is true,
     # we store the name of the point from which the vectors are mutually orthogonal
@@ -217,7 +221,6 @@ def check_result_3d():
         message5 = "Points A, B, C, and D can be vertices of a rectangular prism or a cube."
         label_result_5.config(text=message5)
         print(message5)
-        print(can_be_rectangular_prism)
 
         # Here we call the function to calculate the length of the diagonal
         diagonal_length = calculate_diagonal(can_be_rectangular_prism, 3)
@@ -231,6 +234,11 @@ def check_result_3d():
         label_result_7.config(text=message7)
         print(message7)
 
+        # Here we call the function to determine the shape
+        message8 = point_x_in_rectangle(can_be_rectangular_prism, 3)
+        label_result_8.config(text=message8)
+        print(message8)
+
     else:
         message = "Points A, B, C and D cannot be vertices of a rectangular prism."
         print(message)
@@ -238,67 +246,94 @@ def check_result_3d():
 
 
 def point_x_in_rectangle(start_point, dimension):
+    points = {2: points_2d, 3: points_3d}.get(dimension)
+    vectors = {2: vectors_2d, 3: vectors_3d}.get(dimension)
+
     # First, we need to perform a translation
     # of the coordinate system to the origin point.
-    start_point_data = points_2d[start_point]
+    start_point_data = points[start_point]
 
     x_translation = start_point_data[0]
     y_translation = start_point_data[1]
+    z_translation = start_point_data[2]
 
     translated_points = {}
 
-    for point, coordinates in points_2d.items():
+    for point, coordinates in points.items():
         x = coordinates[0] - x_translation
         y = coordinates[1] - y_translation
-        translated_points[point] = (x, y)
+        z = coordinates[2] - z_translation
+        translated_points[point] = (x, y, z)
 
     # Now we need to rotate the coordinate system so
     # that its axes are parallel to the edges of the shape.
 
     rotated_points = dict()
-    rotated_points[start_point] = (0, 0)
+    rotated_points[start_point] = (0.0, 0.0, 0.0)
 
     another_points = [(point, coordinates) for point, coordinates in translated_points.items() if
                       point != start_point and point != "X"]
 
-    print(start_point)
+    # print(another_points)
+
+    # print(f'start point: {start_point}')
     # We are assigning new coordinates to an arbitrary point so that it lies on the X-axis.
 
     # So that its other coordinates are 0, and the x-coordinate equals the magnitude of
     # the vector between the initial and arbitrarily chosen points.
-    rotated_x = vector_magnitude(vectors_2d[start_point + another_points[0][0]])
-    rotated_points[another_points[0][0]] = (rotated_x, 0)
+    rotated_x = vector_magnitude(vectors[start_point + another_points[0][0]])
+    rotated_points[another_points[0][0]] = (rotated_x, 0.0, 0.0)
 
-    print(f'rotated_x={rotated_x}')
+    # print(f'rotated_x={rotated_x}')
 
     # Here we do the same for another point lying on the y-axis.
-    rotated_y = vector_magnitude(vectors_2d[start_point + another_points[1][0]])
-    rotated_points[another_points[1][0]] = (0, rotated_y)
+    rotated_y = vector_magnitude(vectors[start_point + another_points[1][0]])
+    rotated_points[another_points[1][0]] = (0.0, rotated_y, 0.0)
 
-    print(f'rotated_y={rotated_y}')
+    # print(f'rotated_y={rotated_y}')
+
+    rotated_z = 0.0
+
+    # Same for another point lying on the z-axis if exist
+    if dimension == 3:
+        rotated_z = vector_magnitude(vectors[start_point + another_points[2][0]])
+        rotated_points[another_points[2][0]] = (0.0, 0.0, rotated_z)
 
     # Now we calculate the coordinates of point X in the new coordinate system
     # First, we create a new vector from the initial point to point X
-    vectors_2d[start_point + 'X'] = (
-        points_2d['X'][0] - points_2d[start_point][0], points_2d['X'][1] - points_2d[start_point][1])
-
-    print(points_2d[start_point])
-    print(f'newVector: {vectors_2d[start_point + "X"]}')
+    vectors[start_point + 'X'] = (points['X'][0] - points[start_point][0], points['X'][1] - points[start_point][1],
+                                  points['X'][2] - points[start_point][2])
 
     # Now we find the cosine of the angle between the vector from the initial point to X,
     # as well as the vector from the initial point to the point lying on the x-axis.
-    cos_value_1 = angle_between_vectors(vectors_2d[start_point + 'X'], vectors_2d[start_point + another_points[0][0]])
-    print(f'cos_1: {cos_value_1}')
+    cos_value_1 = angle_between_vectors(vectors[start_point + 'X'], vectors[start_point + another_points[0][0]])
+    new_x = cos_value_1 * vector_magnitude(vectors[start_point + 'X'])
 
-    new_x = cos_value_1 * vector_magnitude(vectors_2d[start_point + 'X'])
+    # We're doing the same thing for the new y-axis.
+    cos_value_2 = angle_between_vectors(vectors[start_point + 'X'], vectors[start_point + another_points[1][0]])
+    new_y = cos_value_2 * vector_magnitude(vectors[start_point + 'X'])
 
-    cos_value_2 = angle_between_vectors(vectors_2d[start_point + 'X'], vectors_2d[start_point + another_points[1][0]])
-    print(f'cos_1: {cos_value_2}')
-    new_y = cos_value_2 * vector_magnitude(vectors_2d[start_point + 'X'])
+    # Same for the z-axis if exist
+    new_z = 0.0
+    if dimension == 3:
+        cos_value_3 = angle_between_vectors(vectors[start_point + 'X'], vectors[start_point + another_points[2][0]])
+        new_z = cos_value_3 * vector_magnitude(vectors[start_point + 'X'])
 
-    rotated_points['X'] = (new_x, new_y)
+    rotated_points['X'] = (new_x, new_y, new_z)
+    # We can finally check if the point is in the requested shape.
+    message = 'Point X is not located in the obtained shape'
+
     print(rotated_points)
-    # print(start_point)
+    if new_x < 0 or new_x > rotated_x:
+        return message
+
+    if new_y < 0 or new_y > rotated_y:
+        return message
+
+    if new_z < 0 or new_z > rotated_z:
+        return message
+
+    return 'Point X is inside the obtained shape.'
 
 
 def angle_between_vectors(a, b):
@@ -316,7 +351,7 @@ def calculate_diagonal(start_point, dimension):
     if dimension == 2:
         # The diagonal can be obtained by the magnitude of vectors obtained from points other than start_point
         diagonal_vector = vectors_2d[[key for key in vectors_2d.keys() if start_point not in key][0]]
-        return vector_magnitude(diagonal_vector)
+        return round(vector_magnitude(diagonal_vector), 1)
     elif dimension == 3:
         # We need to calculate all side lengths, and then apply the formula for calculating the diagonal of a cube
         vectors_from_start_point = [vectors_3d[key] for key in vectors_3d.keys() if key.startswith(start_point)]
@@ -325,7 +360,7 @@ def calculate_diagonal(start_point, dimension):
         v2_magnitude = vector_magnitude(vectors_from_start_point[1])
         v3_magnitude = vector_magnitude(vectors_from_start_point[2])
 
-        diagonal_length = math.sqrt(v1_magnitude ** 2 + v2_magnitude ** 2 + v3_magnitude ** 2)
+        diagonal_length = round(math.sqrt(v1_magnitude ** 2 + v2_magnitude ** 2 + v3_magnitude ** 2), 1)
         return diagonal_length
 
 
@@ -336,8 +371,8 @@ def determine_shape(start_point, dimenstion):
         shape = 'rectangle'
 
         # Here we get the magnitudes of those vectors and if they are equal, it's a square.
-        magnitude_1 = vector_magnitude(vectors_from_start_point[0])
-        magnitude_2 = vector_magnitude(vectors_from_start_point[1])
+        magnitude_1 = round((vector_magnitude(vectors_from_start_point[0])), 1)
+        magnitude_2 = round((vector_magnitude(vectors_from_start_point[1])), 1)
 
         if magnitude_1 == magnitude_2:
             shape = 'square'
@@ -347,9 +382,9 @@ def determine_shape(start_point, dimenstion):
         # We need to calculate all side lengths,
         vectors_from_start_point = [vectors_3d[key] for key in vectors_3d.keys() if key.startswith(start_point)]
 
-        v1_magnitude = vector_magnitude(vectors_from_start_point[0])
-        v2_magnitude = vector_magnitude(vectors_from_start_point[1])
-        v3_magnitude = vector_magnitude(vectors_from_start_point[2])
+        v1_magnitude = round(vector_magnitude(vectors_from_start_point[0]), 1)
+        v2_magnitude = round(vector_magnitude(vectors_from_start_point[1]), 1)
+        v3_magnitude = round(vector_magnitude(vectors_from_start_point[2]), 1)
 
         shape = "rectangular prism"
 
@@ -379,12 +414,12 @@ def vector_magnitude(vector):
 
 
 def show_message(message, dimension):
-    popup = tk.Toplevel()
+    popup = tk.Toplevel(bg="#d5e0f2")
     popup.title("Notification")
     popup.overrideredirect(True)
     popup.geometry("400x100")
 
-    label = tk.Label(popup, text=message, padx=10, pady=10)
+    label = tk.Label(popup, text=message, padx=10, pady=10, bg="#d5e0f2")
     label.pack()
 
     popup.update_idletasks()
